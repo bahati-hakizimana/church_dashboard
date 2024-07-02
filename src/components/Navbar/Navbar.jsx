@@ -94,6 +94,18 @@ const Navbar = ({ handleLoginPopup }) => {
                   >
                     <button className="primary-btn">Login</button>
                   </Link>
+              <Link
+                    to="/admin"
+                    className="text-gray-700 hover:text-gray-900 px-4 py-4 inline-block select-none"
+                  >
+                    <button className="primary-btn">Admin</button>
+                  </Link>
+              {/* <Link
+                    to="/user"
+                    className="text-gray-700 hover:text-gray-900 px-4 py-4 inline-block select-none"
+                  >
+                    <button className="primary-btn">Userdashboard</button>
+                  </Link> */}
               
               <DarkMode />
             </ul>
