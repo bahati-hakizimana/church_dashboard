@@ -50,43 +50,45 @@ const AddEvent = () => {
   };
 
   return (
-    <div className="container mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">Add New Event</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md">
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {success && <p className="text-green-500 mb-4">{success}</p>}
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Event Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows="4"
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Add Event
-          </button>
-        </div>
-      </form>
-    </div>
+    <div className="container mx-auto mt-10 max-w-lg">
+    <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Add New Event</h1>
+    <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg">
+      {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+      {success && <p className="text-green-600 mb-4 text-center">{success}</p>}
+      <div className="mb-6">
+        <label htmlFor="name" className="block text-lg font-semibold text-gray-700 mb-2">Event Name</label>
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ease-in-out duration-150"
+          placeholder="Enter event name"
+          required
+        />
+      </div>
+      <div className="mb-6">
+        <label htmlFor="description" className="block text-lg font-semibold text-gray-700 mb-2">Description</label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows="4"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ease-in-out duration-150"
+          placeholder="Enter event description"
+          required
+        />
+      </div>
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="px-6 py-2 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150"
+        >
+          Add Event
+        </button>
+      </div>
+    </form>
+  </div>  
   );
 };
 

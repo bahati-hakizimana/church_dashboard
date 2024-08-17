@@ -73,7 +73,7 @@ function MemberNotification() {
       {error && <p className="text-red-500">{error}</p>}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
-          <thead>
+          <thead className=' bg-blue-500 text-white'>
             <tr>
               <th className="py-2 px-4 border-b">Description</th>
               <th className="py-2 px-4 border-b">Created Date</th>

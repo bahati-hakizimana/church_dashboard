@@ -25,7 +25,7 @@ function Sidebar() {
 
   const Sidebar_Links = [
     { id: 1, name: 'Dashboard', path: '/admin', icon: <MdDashboard /> },
-    { id: 1, name: 'Activities', path: '/admin/activites', icon: <GrSchedules /> },
+    { id: 1, name: 'Events', path: '/admin/activites', icon: <GrSchedules /> },
     {
       id: 2,
       name: 'Users',
