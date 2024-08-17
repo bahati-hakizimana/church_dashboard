@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import HeroPng from "../../assets/website/hero_advent.jpg";
 import { Link, useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const AddUser = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -38,7 +37,7 @@ const Signup = () => {
 
       if (response.data.message === "User created successfully") {
         // Navigate to login page
-        navigate('/login');
+        navigate('/admin/users');
       }
     } catch (error) {
       setError('Signup failed. Please try again.');
@@ -50,8 +49,6 @@ const Signup = () => {
       <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
         {/* left side */}
         <div className="flex flex-col justify-center p-8 md:p-14">
-          <span className="mb-3 text-4xl font-bold">Welcome</span>
-          <span className="font-light text-gray-400 mb-8">Register Here</span>
           
           {error && <p className="text-red-500 mb-4">{error}</p>}
           
@@ -110,26 +107,14 @@ const Signup = () => {
               type="submit"
               className="w-full bg-blue-800 text-white p-2 rounded-lg mb-6 hover:bg-white hover:text-black hover:border hover:border-gray-300"
             >
-              Sign up
+              Add User
             </button>
           </form>
-
-          <div className="text-center text-gray-400">
-            Have an account?
-            <Link to="/login" className="font-bold text-black hover:text-green-600"> Login</Link>
-          </div>
         </div>
         {/* right side */}
-        <div className="relative">
-          <img
-            src={HeroPng}
-            alt="img"
-            className="w-[400px] h-full hidden rounded-r-2xl md:block object-cover"
-          />
-        </div>
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default AddUser

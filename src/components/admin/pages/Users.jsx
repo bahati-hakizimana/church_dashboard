@@ -1,248 +1,172 @@
-import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { MdAutoDelete } from 'react-icons/md';
 import { FaEdit } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import logo from '../../../assets/website/adventist.jpeg';
 
-function Users() {
-  const printRef = useRef();
+const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState(null);
 
-  const handleDownload = () => {
-    const printContents = printRef.current.innerHTML;
-    const blob = new Blob([printContents], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'users_report.html';
-    a.click();
-    URL.revokeObjectURL(url);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          setError('No access token found');
+          return;
+        }
+
+        const response = await fetch('http://127.0.0.1:8000/users/', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setError('Error fetching users. Please check your credentials and try again.');
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleDownloadPDF = () => {
+    try {
+      const doc = new jsPDF();
+
+      const img = new Image();
+      img.src = logo;
+
+      img.onload = () => {
+        doc.addImage(img, 'JPEG', 10, 10, 30, 30);
+        doc.setFontSize(20);
+        doc.text('Users Report', 50, 25);
+        doc.setLineWidth(0.5);
+        doc.line(10, 45, 200, 45);
+
+        const tableColumn = ["username", "Email", "Created Date"];
+        const tableRows = users.map(user => [
+          user.username, user.email,
+          new Date(user.created_date).toLocaleString()
+        ]);
+
+        doc.autoTable({
+          head: [tableColumn],
+          body: tableRows,
+          startY: 50,
+          theme: 'striped',
+          styles: { fontSize: 10 },
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255],
+          },
+        });
+
+        doc.save('Users_report.pdf');
+      };
+    } catch (error) {
+      console.error('Error generating PDF report:', error);
+      setError('Error generating PDF report. Please try again.');
+    }
   };
 
-  const UsersData = [
-    {
-      id: 1,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-    {
-      id: 2,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-    {
-      id: 3,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-    {
-      id: 4,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-    {
-      id: 5,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-    {
-      id: 6,
-      FirstName: 'Karangwa',
-      LastName: 'Karangwa',
-      Email: 'karangwa@gmail.com',
-      Phone: '+250780000000',
-    },
-  ];
+  const handleDelete = async (userId) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setError('No access token found');
+        return;
+      }
+
+      const response = await fetch(`http://127.0.0.1:8000/user/delete/${userId}/`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Get detailed error message
+        throw new Error(`HTTP error! status: ${response.status}. ${errorData.message}`);
+      }
+
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError(`Error deleting user: ${error.message}`);
+    }
+  };
 
   return (
-    <>
-      <div className="flex justify-between items-center mt-10 mb-4">
-        <h1 className="text-2xl flex justify-center font-bold text-center">Users</h1>
-        <button
-          onClick={handleDownload}
-          className="btn btn-primary text-white bg-blue-500 hover:bg-green-600 rounded-md px-4 py-2"
-        >
-          Print report
-        </button>
-      </div>
-
-      <div ref={printRef} className="print-container hidden">
-        <div className="mb-4 text-center">
-          <img src="path-to-your-logo.png" alt="Company Logo" className="mx-auto mb-2" style={{ width: '100px' }} />
-          <h2 className="text-xl font-bold">Your Company Name</h2>
-        </div>
-
-        <div className="hidden md:flex md:flex-col">
-          <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-blue-400">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-white"
-                      >
-                        First Name
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                      >
-                        Last Name
-                      </th>
-                      <th
-                        scope="col"
-                        className="hidden sm:table-cell py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                      >
-                        Email
-                      </th>
-                      <th
-                        scope="col"
-                        className="hidden lg:table-cell py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                      >
-                        Phone
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {UsersData.map((user, index) => (
-                      <tr key={index}>
-                        <td className="w-full sm:w-auto max-w-0 sm:max-w-none whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                          {user.FirstName}
-                          <dl className="lg:hidden font-normal">
-                            <dt className="sr-only sm:hidden text-gray-700 mt-1">Email</dt>
-                            <dd className="sm:hidden">{user.Email}</dd>
-                            <dt className="sr-only text-gray-700 mt-1">Phone</dt>
-                            <dd>{user.Phone}</dd>
-                          </dl>
-                        </td>
-                        <td className="whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                          {user.LastName}
-                        </td>
-                        <td className="hidden sm:table-cell whitespace-nowrap py-4 pl-4 text-sm text-gray-500 truncate">
-                          {user.Email}
-                        </td>
-                        <td className="hidden lg:table-cell whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                          {user.Phone}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+    <div className="container mx-auto mt-10">
+      <h1 className="text-2xl font-bold mb-4">User List</h1>
+      {error && <p className="text-red-500">{error}</p>}
+      <div className='flex justify-end'>
+        <div className='flex justify-center items-center mb-4 gap-4'>
+          <button onClick={handleDownloadPDF} className='bg-green-400 px-4 py-2 text-xl rounded-lg text-white'>
+            Print Report
+          </button>
+          <Link to="/admin/adduser" className='bg-blue-500 px-4 py-2 text-white rounded-lg'>
+            Add User
+          </Link>
         </div>
       </div>
 
-      <div className="hidden md:flex md:flex-col">
-        <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-blue-400">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-white"
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-blue-400 text-white">
+            <tr>
+              <th className="py-3 px-6 text-left text-sm font-semibold">Username</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold">Email</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold">Role</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold">Created Date</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="py-4 text-center text-gray-500">No users found.</td>
+              </tr>
+            ) : (
+              users.map((user) => (
+                <tr key={user.id}>
+                  <td className="py-4 px-6 text-sm text-gray-500">{user.username}</td>
+                  <td className="py-4 px-6 text-sm text-gray-500">{user.email}</td>
+                  <td className="py-4 px-6 text-sm text-gray-500">{user.role}</td>
+                  <td className="py-4 px-6 text-sm text-gray-500">{new Date(user.created_date).toLocaleString()}</td>
+                  <td className="py-4 px-6 text-sm text-gray-500 flex space-x-2">
+                    <Link to={`/admin/updateuser/${user.id}`} className="text-gray-700 hover:text-green-500">
+                      <FaEdit className="text-xl" />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="text-gray-700 hover:text-red-500"
                     >
-                      First Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                    >
-                      Last Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="hidden sm:table-cell py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                    >
-                      Email
-                    </th>
-                    <th
-                      scope="col"
-                      className="hidden lg:table-cell py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                    >
-                      Phone
-                    </th>
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-6 text-left text-sm font-semibold text-white"
-                    >
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {UsersData.map((user, index) => (
-                    <tr key={index}>
-                      <td className="w-full sm:w-auto max-w-0 sm:max-w-none whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                        {user.FirstName}
-                        <dl className="lg:hidden font-normal">
-                          <dt className="sr-only sm:hidden text-gray-700 mt-1">Email</dt>
-                          <dd className="sm:hidden">{user.Email}</dd>
-                          <dt className="sr-only text-gray-700 mt-1">Phone</dt>
-                          <dd>{user.Phone}</dd>
-                        </dl>
-                      </td>
-                      <td className="whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                        {user.LastName}
-                      </td>
-                      <td className="hidden sm:table-cell whitespace-nowrap py-4 pl-4 text-sm text-gray-500 truncate">
-                        {user.Email}
-                      </td>
-                      <td className="hidden lg:table-cell whitespace-nowrap py-4 pl-4 text-sm text-gray-500">
-                        {user.Phone}
-                      </td>
-                      <td className="whitespace-nowrap py-4 flex flex-1 justify-center items-center text-sm text-gray-500">
-                        <Link className="mr-4">
-                          <FaEdit className="text-2xl font-semibold text-gray-700 hover:text-green-500" />
-                        </Link>
-                        <button>
-                          <MdAutoDelete className="text-2xl font-semibold text-gray-700 hover:text-red-500 rounded-full" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+                      <MdAutoDelete className="text-xl" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* Card responsive for medium size */}
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:hidden">
-        {UsersData.map((user, index) => (
-          <div key={index} className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-gray-900">{user.FirstName} {user.LastName}</p>
-              <p className="truncate text-sm text-gray-500">{user.Email}</p>
-              <p className="truncate text-sm text-gray-500">{user.Phone}</p>
-            </div>
-            <div className="flex flex-1 justify-center items-center text-sm text-gray-500">
-              <Link className="mr-4">
-                <FaEdit className="text-2xl font-semibold text-gray-700 hover:text-green-500" />
-              </Link>
-              <button>
-                <MdAutoDelete className="text-2xl font-semibold text-gray-700 hover:text-red-500 rounded-full" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
+    </div>
   );
-}
+};
 
 export default Users;

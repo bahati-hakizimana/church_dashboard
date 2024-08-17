@@ -4,11 +4,12 @@ import { FaEdit } from 'react-icons/fa';
 import { MdAutoDelete } from 'react-icons/md';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import logo from '../../../assets/website/adventist.jpeg'
+import logo from '../../../assets/website/adventist.jpeg';
 
-function Notification() {
+function StaffNotification() {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -44,13 +45,13 @@ function Notification() {
 
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem('access_token'); // Get the access token from local storage
+      const token = localStorage.getItem('access_token');
       if (!token) {
         setError('No access token found');
         return;
       }
 
-      const response = await fetch(`http://127.0.0.1:8000/notification/notifications/${id}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/notification/delete/${id}/`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,6 +63,8 @@ function Notification() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      const result = await response.json();
+      setSuccess(result.message);
       // Remove the deleted notification from the state
       setNotifications(notifications.filter(notification => notification.id !== id));
     } catch (error) {
@@ -127,24 +130,24 @@ function Notification() {
     <div className="container mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-4">Notifications</h1>
       {error && <p className="text-red-500">{error}</p>}
-      <div className=' flex justify-end'>
-        <div className=' flex gap-4'>
+      {success && <p className="text-green-500">{success}</p>}
+      <div className='flex justify-end'>
+        <div className='flex gap-4'>
           <button
             onClick={handleDownloadPDF}
             className="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-green-700"
           >
             Download PDF
           </button>
-          <Link to="/admin/add-notification">
+          <Link to="/staff/AddNotification">
             <button className="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Add Notification</button>
           </Link>
-
         </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
-          <thead className=' bg-blue-500 text-white'>
+          <thead className='bg-blue-500 text-white'>
             <tr>
               <th className="py-2 px-4 border-b">Description</th>
               <th className="py-2 px-4 border-b">Created Date</th>
@@ -162,14 +165,14 @@ function Notification() {
                   <td className="py-2 px-4 border-b text-center">{notification.description}</td>
                   <td className="py-2 px-4 border-b text-center">{new Date(notification.created_date).toLocaleString()}</td>
                   <td className="py-2 px-4 border-b text-center">
-                    <Link to={`/admin/edit-notification/${notification.id}`}>
+                    <Link to={`/staff/update-notification/${notification.id}`}>
                       <button className="mr-2">
                         <FaEdit className="text-xl text-gray-700 hover:text-green-500" />
                       </button>
                     </Link>
-                    {/* <button onClick={() => handleDelete(notification.id)} className="text-red-500">
+                    <button onClick={() => handleDelete(notification.id)} className="text-red-500">
                       <MdAutoDelete className="text-xl hover:text-red-700" />
-                    </button> */}
+                    </button>
                   </td>
                 </tr>
               ))
@@ -181,4 +184,4 @@ function Notification() {
   );
 }
 
-export default Notification;
+export default StaffNotification;

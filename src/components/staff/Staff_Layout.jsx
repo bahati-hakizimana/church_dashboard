@@ -3,7 +3,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { Outlet } from 'react-router-dom';
 
-function Layout() {
+function Staff_Layout() {
   return (
     <div className='bg-gray-100 min-h-screen'>
       <div className='flex'>
@@ -19,4 +19,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default Staff_Layout;

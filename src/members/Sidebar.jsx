@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUsers } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import Logo from '../../assets/website/adventist.jpeg';
+import Logo from '../assets/website/adventist.jpeg';
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import { GiParkBench } from "react-icons/gi";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -24,21 +24,13 @@ function Sidebar() {
   };
 
   const Sidebar_Links = [
-    { id: 1, name: 'Dashboard', path: '/admin', icon: <MdDashboard /> },
-    { id: 1, name: 'Activities', path: '/admin/activites', icon: <GrSchedules /> },
-    {
-      id: 2,
-      name: 'Users',
-      path:"/admin/users",
-      icon: <FaUsers />
-    
-    },
+    // { id: 1, name: 'Dashboard', path: '/members', icon: <MdDashboard /> },
+    { id: 1, name: 'Events', path: '/members/events', icon: <GrSchedules /> },
     { id: 3,
        name: 'Notifications', 
-       path: '/admin/notifications',
+       path: '/members/notifications',
         icon: <MdOutlineNotificationsActive /> },
-    { id: 4, name: 'Transactions', path: '/admin/transactions', icon: <GiParkBench /> },
-    // { id: 5, name: 'Report', path: '/admin/report', icon: <TbReportAnalytics /> },
+    { id: 5, name: 'Pay', path: '/members/Pay', icon: <TbReportAnalytics /> },
   ];
 
   return (

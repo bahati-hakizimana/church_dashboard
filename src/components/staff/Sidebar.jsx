@@ -24,21 +24,14 @@ function Sidebar() {
   };
 
   const Sidebar_Links = [
-    { id: 1, name: 'Dashboard', path: '/admin', icon: <MdDashboard /> },
-    { id: 1, name: 'Activities', path: '/admin/activites', icon: <GrSchedules /> },
-    {
-      id: 2,
-      name: 'Users',
-      path:"/admin/users",
-      icon: <FaUsers />
-    
-    },
+    { id: 1, name: 'Dashboard', path: '/staff', icon: <MdDashboard /> },
+    { id: 1, name: 'Events', path: '/staff/events', icon: <GrSchedules /> },
     { id: 3,
        name: 'Notifications', 
-       path: '/admin/notifications',
+       path: '/staff/notifications',
         icon: <MdOutlineNotificationsActive /> },
-    { id: 4, name: 'Transactions', path: '/admin/transactions', icon: <GiParkBench /> },
-    // { id: 5, name: 'Report', path: '/admin/report', icon: <TbReportAnalytics /> },
+    { id: 5, name: 'Pay', path: '/staff/Pay', icon: <TbReportAnalytics /> },
+    { id: 4, name: 'Transactions', path: '/staff/transactions', icon: <GiParkBench /> },
   ];
 
   return (
